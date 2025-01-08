@@ -26,7 +26,7 @@
             margin-bottom: 8px;
             display: block;
         }
-        input[type="text"], input[type="email"], input[type="password"] {
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -41,9 +41,17 @@
             border: none;
             border-radius: 4px;
             font-size: 16px;
+            margin-top: 10px;
         }
         button:hover {
             background-color: #45a049;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn-container button {
+            width: 48%;
         }
     </style>
 </head>
@@ -58,30 +66,46 @@
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+        <label for="mobile">Mobile Number:</label>
+        <input type="tel" id="mobile" name="mobile" required>
 
-        <button type="submit">Register</button>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required>
+
+        <div class="btn-container">
+            <button type="button" id="saveBtn">Save Registration</button>
+            <button type="button" id="downloadBtn">Download Excel</button>
+        </div>
     </form>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        document.getElementById('registrationForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+        let registrations = [];
 
+        document.getElementById('saveBtn').addEventListener('click', function () {
             const formData = {
                 Name: document.getElementById('name').value,
                 Email: document.getElementById('email').value,
-                Password: document.getElementById('password').value,
+                Mobile: document.getElementById('mobile').value,
+                DateOfBirth: document.getElementById('dob').value,
             };
 
-            const data = [formData];
+            registrations.push(formData);
+            alert('Registration saved!');
+            document.getElementById('registrationForm').reset(); // Reset the form after saving
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            if (registrations.length === 0) {
+                alert('No registrations to download!');
+                return;
+            }
 
             const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet(data);
+            const worksheet = XLSX.utils.json_to_sheet(registrations);
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Registrations');
 
-            // Export to Excel
+            // Download the Excel file
             XLSX.writeFile(workbook, 'registration_data.xlsx');
         });
     </script>
